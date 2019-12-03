@@ -11,7 +11,7 @@
      * @param {Object} options An object containing the extension configuration. The
      * following fields should be provided:
      *  - buttonText: the text of the button (default: `</>`)
-     *  - htmlToInsert: the HTML code that should be inserted
+     *  - htmlToInsert: the HTML code that should be inserted / resolver function
      */
     function CustomHtml(options) {
         this.button = document.createElement('button');
@@ -67,8 +67,11 @@
      * @name onClick
      * @function
      */
-    CustomHtml.prototype.onClick = function () {
-        CustomHtml.insertHtmlAtCaret(this.options.htmlToInsert);
+    CustomHtml.prototype.onClick = async function () {
+        var html = typeof this.options.htmlToInsert === "function"
+            ? await new Promise(this.options.htmlToInsert) // resolver function
+            : this.options.htmlToInsert;
+        CustomHtml.insertHtmlAtCaret(html);
     };
 
     /**
